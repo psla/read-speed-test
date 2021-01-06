@@ -1,0 +1,13 @@
+This project contains two read speed tests. One written in C#, one written in C++ (well... C mostly).
+
+The C++ one is significantly faster.
+
+Note that very little sanity check is done, DO NOT USE WITH UNTRUSTED INPUTS.
+
+# Launch C++
+
+```
+cd ReadSpeedTestNative
+bazel build -c opt :read-speed-test
+Get-ChildItem C:\tmp\*.[a-z][a-z][a-z]  |% { .\bazel-out\x64_windows-opt\bin\read-speed-test.exe $_.FullName }
+```
