@@ -9,17 +9,24 @@ const int BUFFER_SIZE = 81920;
 int main(int argc, char *argv[])
 {
  	char buffer[BUFFER_SIZE]; // default buffer as in c# for apple-to-apple comparison
-	long totalBytesRead = 0;
+	int64_t totalBytesRead = 0;
+	
+	std::cout << "Testing file: " << argv[1] << std::endl;
  
     auto start = std::chrono::steady_clock::now();
  
 	// Read all file
 	FILE * fp;
 
-	fp = fopen(argv[0], "r");
+	fp = fopen(argv[1], "rb");
+	if(fp == NULL) {
+		std::cerr << "Unable to open file" << std::endl;
+		return 1;
+	}
+	
 	auto startAfterFopen = std::chrono::steady_clock::now();
 	
-	long bytesRead;
+	int64_t bytesRead;
 	do {
 		bytesRead = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
 		totalBytesRead += bytesRead;
@@ -29,6 +36,13 @@ int main(int argc, char *argv[])
     auto end = std::chrono::steady_clock::now();
 	
 	double secondsElapsed = (std::chrono::duration_cast<std::chrono::microseconds>(end - start).count())/1000000.0;
-	std::cout << totalBytesRead << " bytes (" << totalBytesRead / 1024.0 / 1024.0 << " MB) copied, " << secondsElapsed << " s, " << (totalBytesRead / secondsElapsed / 1024 / 1024) << " MB/s";
+	double secondsElapsedAfterOpen = (std::chrono::duration_cast<std::chrono::microseconds>(end - startAfterFopen).count())/1000000.0;
+	
+	std::cout << "After open:  " << totalBytesRead << " bytes (" << totalBytesRead / 1024.0 / 1024.0 << " MB) copied, " << secondsElapsedAfterOpen << " s, " << (totalBytesRead / secondsElapsedAfterOpen / 1024 / 1024) << " MB/s" << std::endl;
+	
+	std::cout << "Before open: " << totalBytesRead << " bytes (" << totalBytesRead / 1024.0 / 1024.0 << " MB) copied, " << secondsElapsed << " s, " << (totalBytesRead / secondsElapsed / 1024 / 1024) << " MB/s" << std::endl;
+	
+	std::cout << "Diff in milliseconds=" << (std::chrono::duration_cast<std::chrono::milliseconds>(end - start) - std::chrono::duration_cast<std::chrono::milliseconds>(end - startAfterFopen)).count() << std::endl;
+
 	return(0);
 }
