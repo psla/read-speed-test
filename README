@@ -11,3 +11,17 @@ cd ReadSpeedTestNative
 bazel build -c opt :read-speed-test
 Get-ChildItem C:\tmp\*.[a-z][a-z][a-z]  |% { .\bazel-out\x64_windows-opt\bin\read-speed-test.exe $_.FullName }
 ```
+
+# DD?
+
+This is supposed to output format similar to dd.
+
+In fact, if WSL (windows subsystem for linux) offered better performance, I would use DD. However, I couldn't get past 80MB/s in WSL on my network interface.
+
+dd counterpart:
+
+```
+dd if=filename of=/dev/null
+```
+
+optionally with (bs=81920).
